@@ -258,10 +258,6 @@ Contributions welcome! Please read [CONTRIBUTING.md](docs/CONTRIBUTING.md) first
 4. Push to branch (`git push origin feature/AmazingFeature`)
 5. Open Pull Request
 
-## 📝 License
-
-This project is licensed under the MIT License - see [LICENSE](LICENSE) file.
-
 ## 🎓 Academic Use
 
 This project was developed as part of an MCA final year project. Feel free to use it for:
@@ -281,19 +277,10 @@ Please cite if used in academic work.
 
 ## 📧 Contact
 
-- **Author**: [Your Name]
-- **Email**: your.email@example.com
-- **LinkedIn**: [Your LinkedIn]
-- **GitHub**: [@yourusername](https://github.com/yourusername)
-
-## 🗺️ Roadmap
-
-- [ ] Multi-language support
-- [ ] Voice interface
-- [ ] Image understanding
-- [ ] Custom LLM fine-tuning
-- [ ] Mobile application
-- [ ] Advanced analytics dashboard
+- **Author**: Yoganathan C
+- **Email**: iamyoganathanc@gmail.com
+- **LinkedIn**: [@Yoganathan](www.linkedin.com/in/yoganathan-c)
+- **GitHub**: [@iamyoganathan](https://github.com/iamyoganathan)
 
 ---
 
