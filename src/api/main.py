@@ -31,6 +31,13 @@ from src.api.middleware import rate_limit_middleware, security_headers_middlewar
 logger = get_logger(__name__)
 settings = get_settings()
 
+# Debug: Log environment at startup
+logger.info(f"=== STARTUP DEBUG ===")
+logger.info(f"Python version: {sys.version}")
+logger.info(f"PORT env var: {os.environ.get('PORT', 'NOT SET')}")
+logger.info(f"GROQ_API_KEY exists: {bool(os.environ.get('GROQ_API_KEY'))}")
+logger.info(f"Current directory: {os.getcwd()}")
+
 
 # Lifespan context manager for startup/shutdown
 @asynccontextmanager
@@ -60,15 +67,22 @@ async def lifespan(app: FastAPI):
 
 
 # Create FastAPI app
-app = FastAPI(
-    title="Enterprise RAG System API",
-    description="RESTful API for document ingestion, semantic search, and RAG-based Q&A with security",
-    version="2.0.0",
-    lifespan=lifespan
-)
+logger.info("Creating FastAPI app...")
+try:
+    app = FastAPI(
+        title="Enterprise RAG System API",
+        description="RESTful API for document ingestion, semantic search, and RAG-based Q&A with security",
+        version="2.0.0",
+        lifespan=lifespan
+    )
+    logger.info("FastAPI app created successfully")
+except Exception as e:
+    logger.error(f"Failed to create FastAPI app: {e}", exc_info=True)
+    raise
 
 
 # CORS middleware (PRODUCTION-READY)
+logger.info("Adding CORS middleware...")
 app.add_middleware(
     CORSMiddleware,
     allow_origins=[
@@ -83,6 +97,7 @@ app.add_middleware(
     allow_methods=["GET", "POST", "PUT", "DELETE"],
     allow_headers=["Content-Type", "Authorization", "X-API-Key"],
 )
+logger.info("CORS middleware added")
 
 
 # Security middleware (must be added first)
@@ -91,6 +106,7 @@ async def security_middleware(request, call_next):
     """Apply security headers to all responses."""
     return await security_headers_middleware(request, call_next)
 
+logger.info("Security middleware added")
 
 # Rate limiting middleware
 @app.middleware("http")
@@ -98,6 +114,7 @@ async def rate_limiting_middleware(request, call_next):
     """Apply rate limiting to API requests."""
     return await rate_limit_middleware(request, call_next)
 
+logger.info("Rate limiting middleware added")
 
 # Request timing middleware
 @app.middleware("http")
@@ -109,6 +126,7 @@ async def add_process_time_header(request, call_next):
     response.headers["X-Process-Time"] = str(process_time)
     return response
 
+logger.info("Timing middleware added")
 
 # Root endpoint
 @app.get("/", tags=["Root"])
@@ -195,15 +213,31 @@ async def get_statistics():
         raise HTTPException(status_code=500, detail=str(e))
 
 
-# Import routers
-from src.api import documents, search, chat
-from src.api.routes import auth
+# Import routers with error handling
+logger.info("Importing routers...")
+try:
+    from src.api import documents, search, chat
+    logger.info("Imported documents, search, chat routers")
+    from src.api.routes import auth
+    logger.info("Imported auth router")
+except Exception as e:
+    logger.error(f"Failed to import routers: {e}", exc_info=True)
+    raise
 
 # Include routers
-app.include_router(auth.router, prefix="/api")  # Auth routes
-app.include_router(documents.router, prefix="/api/documents", tags=["Documents"])
-app.include_router(search.router, prefix="/api/search", tags=["Search"])
-app.include_router(chat.router, prefix="/api/chat", tags=["Chat"])
+logger.info("Adding routers to app...")
+try:
+    app.include_router(auth.router, prefix="/api")  # Auth routes
+    logger.info("Added auth router")
+    app.include_router(documents.router, prefix="/api/documents", tags=["Documents"])
+    logger.info("Added documents router")
+    app.include_router(search.router, prefix="/api/search", tags=["Search"])
+    logger.info("Added search router")
+    app.include_router(chat.router, prefix="/api/chat", tags=["Chat"])
+    logger.info("Added chat router")
+except Exception as e:
+    logger.error(f"Failed to add routers: {e}", exc_info=True)
+    raise
 
 
 # Error handlers (standardized error format)
@@ -241,6 +275,8 @@ async def general_exception_handler(request, exc):
         }
     )
 
+
+logger.info("=== FastAPI app module loaded successfully ===")
 
 # Run server
 if __name__ == "__main__":
