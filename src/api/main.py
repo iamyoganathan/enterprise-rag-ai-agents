@@ -3,6 +3,18 @@ FastAPI Application
 Main API entry point for the RAG system.
 """
 
+import sys
+import os
+
+# Debug: Print environment info at startup
+print("=" * 60, file=sys.stderr)
+print("STARTUP DEBUG INFO:", file=sys.stderr)
+print(f"Python version: {sys.version}", file=sys.stderr)
+print(f"Current directory: {os.getcwd()}", file=sys.stderr)
+print(f"PORT env var: {os.environ.get('PORT', 'NOT SET')}", file=sys.stderr)
+print(f"GROQ_API_KEY exists: {bool(os.environ.get('GROQ_API_KEY'))}", file=sys.stderr)
+print("=" * 60, file=sys.stderr)
+
 from fastapi import FastAPI, HTTPException, UploadFile, File, BackgroundTasks
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import StreamingResponse, JSONResponse
