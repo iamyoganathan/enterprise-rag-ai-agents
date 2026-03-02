@@ -139,14 +139,21 @@ class Settings(BaseSettings):
         ]
         
         for directory in directories:
-            directory.mkdir(parents=True, exist_ok=True)
+            try:
+                directory.mkdir(parents=True, exist_ok=True)
+            except Exception as e:
+                # Log but don't crash - directory might be created later
+                print(f"Warning: Could not create directory {directory}: {e}")
 
 
 # Global settings instance
 settings = Settings()
 
-# Ensure directories exist on import
-settings.ensure_directories()
+# Ensure directories exist on import (non-critical, will retry at startup)
+try:
+    settings.ensure_directories()
+except Exception as e:
+    print(f"Warning: Directory creation deferred due to: {e}")
 
 
 def get_settings() -> Settings:
