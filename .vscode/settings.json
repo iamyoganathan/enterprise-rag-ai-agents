@@ -1,0 +1,80 @@
+{
+  // Python Interpreter - Use virtual environment
+  "python.defaultInterpreterPath": "${workspaceFolder}/venv/Scripts/python.exe",
+  "python.terminal.activateEnvironment": true,
+  "python.terminal.activateEnvInCurrentTerminal": true,
+  
+  // Python Analysis
+  "python.analysis.extraPaths": [
+    "${workspaceFolder}/src",
+    "${workspaceFolder}/frontend"
+  ],
+  "python.analysis.autoImportCompletions": true,
+  "python.analysis.typeCheckingMode": "basic",
+  
+  // Linting
+  "python.linting.enabled": true,
+  "python.linting.pylintEnabled": false,
+  "python.linting.flake8Enabled": false,
+  "python.linting.mypyEnabled": false,
+  
+  // Formatting
+  "python.formatting.provider": "autopep8",
+  "[python]": {
+    "editor.defaultFormatter": "ms-python.python",
+    "editor.formatOnSave": false,
+    "editor.codeActionsOnSave": {
+      "source.organizeImports": "explicit"
+    }
+  },
+  
+  // Testing
+  "python.testing.pytestEnabled": true,
+  "python.testing.unittestEnabled": false,
+  "python.testing.pytestArgs": [
+    "tests"
+  ],
+  
+  // Environment
+  "python.envFile": "${workspaceFolder}/.env",
+  
+  // Auto-activate venv
+  "terminal.integrated.env.windows": {
+    "PYTHONPATH": "${workspaceFolder}/src:${workspaceFolder}/frontend"
+  },
+  
+  // Files
+  "files.exclude": {
+    "**/__pycache__": true,
+    "**/*.pyc": true,
+    "**/.pytest_cache": true,
+    "**/.mypy_cache": true,
+    "**/.ruff_cache": true,
+    "**/venv": false
+  },
+  
+  // Search
+  "search.exclude": {
+    "**/venv": true,
+    "**/__pycache__": true,
+    "**/data/vector_db": true,
+    "**/data/cache": true,
+    "**/logs": true,
+    "**/node_modules": true
+  },
+  
+  // Editor
+  "editor.rulers": [88, 120],
+  "editor.insertSpaces": true,
+  "editor.tabSize": 4,
+  
+  // Files to watch
+  "files.watcherExclude": {
+    "**/venv/**": true,
+    "**/data/vector_db/**": true,
+    "**/data/cache/**": true,
+    "**/.git/objects/**": true,
+    "**/.git/subtree-cache/**": true,
+    "**/node_modules/**": true
+  }
+}

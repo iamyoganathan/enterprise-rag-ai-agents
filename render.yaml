@@ -1,0 +1,47 @@
+# Render.com deployment configuration
+# This file tells Render how to deploy your backend API
+
+services:
+  # Backend API Service
+  - type: web
+    name: rag-backend
+    env: python
+    region: oregon  # Change to: oregon, frankfurt, singapore, ohio
+    plan: free  # Free tier (512MB RAM, sleeps after 15 min inactivity)
+    branch: main
+    buildCommand: pip install -r requirements.txt
+    startCommand: uvicorn src.api.main:app --host 0.0.0.0 --port $PORT
+    healthCheckPath: /health
+    envVars:
+      - key: GROQ_API_KEY
+        sync: false  # Set manually in Render dashboard
+      - key: SECRET_KEY
+        generateValue: true
+      - key: PYTHON_VERSION
+        value: 3.11.0
+      - key: DEFAULT_LLM_PROVIDER
+        value: groq
+      - key: DEFAULT_LLM_MODEL
+        value: llama-3.3-70b-versatile
+      - key: VECTOR_DB_PATH
+        value: /opt/render/project/data/vector_db
+      - key: LOG_LEVEL
+        value: INFO
+      - key: DEBUG
+        value: false
+      - key: RATE_LIMIT_PER_MINUTE
+        value: 30
+      - key: RATE_LIMIT_PER_HOUR
+        value: 500
+      - key: ACCESS_TOKEN_EXPIRE_MINUTES
+        value: 30
+    
+    # Persistent disk for vector database
+    disk:
+      name: rag-data
+      mountPath: /opt/render/project/data
+      sizeGB: 1
+
+# Alternative: If you want to use Railway.app instead
+# Just push to GitHub and connect your repo
+# Railway auto-detects Python and runs it
