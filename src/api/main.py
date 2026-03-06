@@ -6,6 +6,7 @@ Main API entry point for the RAG system.
 import sys
 import os
 
+os.environ["TOKENIZERS_PARALLELISM"] = "false"
 # Debug: Print environment info at startup
 print("=" * 60, file=sys.stderr)
 print("STARTUP DEBUG INFO:", file=sys.stderr)
