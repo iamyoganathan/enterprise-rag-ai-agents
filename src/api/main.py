@@ -87,13 +87,13 @@ logger.info("Adding CORS middleware...")
 app.add_middleware(
     CORSMiddleware,
     allow_origins=[
-        "http://localhost:8501",  # Streamlit frontend
+        "http://localhost:8501",  # Streamlit frontend (local)
         "http://localhost:3000",  # React frontend (if any)
         "http://127.0.0.1:8501",
         "http://127.0.0.1:3000",
-        # Add your production domains here
-        # "https://yourdomain.com",
+        "https://enterprise-rag-ai-agents.onrender.com",
     ],
+    allow_origin_regex=r"https://.*\.streamlit\.app",  # Streamlit Cloud
     allow_credentials=True,
     allow_methods=["GET", "POST", "PUT", "DELETE"],
     allow_headers=["Content-Type", "Authorization", "X-API-Key"],

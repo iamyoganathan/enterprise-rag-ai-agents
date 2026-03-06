@@ -42,6 +42,7 @@ venv.bak/
 .env
 .env.local
 .env.*.local
+.streamlit/secrets.toml
 
 # Data
 data/raw/*
