@@ -147,10 +147,21 @@ async def root():
     }
 
 
-# Health check
+# Health check (lightweight - no heavy imports to avoid OOM on 512MB instances)
 @app.get("/health", tags=["Health"])
 async def health_check():
-    """Health check endpoint."""
+    """Lightweight health check endpoint."""
+    return {
+        "status": "healthy",
+        "timestamp": time.time(),
+        "version": "1.0.0"
+    }
+
+
+# Deep health check (loads heavy dependencies - use only when needed)
+@app.get("/health/deep", tags=["Health"])
+async def deep_health_check():
+    """Deep health check that verifies all components (requires more memory)."""
     try:
         from src.embeddings import get_vector_store
         from src.llm import get_llm_client
@@ -174,7 +185,7 @@ async def health_check():
         }
     
     except Exception as e:
-        logger.error(f"Health check failed: {str(e)}")
+        logger.error(f"Deep health check failed: {str(e)}")
         return JSONResponse(
             status_code=503,
             content={
