@@ -10,8 +10,6 @@ from pathlib import Path
 import shutil
 import uuid
 
-from src.ingestion import IngestionPipeline, ingest_file
-from src.embeddings import IndexingPipeline
 from src.utils.logger import get_logger
 from src.utils.config import get_settings
 
@@ -46,6 +44,9 @@ class DeleteResponse(BaseModel):
 async def process_document_task(file_path: Path, doc_id: str):
     """Background task to process document."""
     try:
+        from src.ingestion import IngestionPipeline
+        from src.embeddings import IndexingPipeline
+        
         logger.info(f"Processing document: {file_path.name}")
         
         # Ingest document

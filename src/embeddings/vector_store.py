@@ -7,9 +7,6 @@ Handles document storage, retrieval, and similarity search.
 from typing import List, Dict, Any, Optional, Tuple
 import numpy as np
 from pathlib import Path
-import chromadb
-from chromadb.config import Settings as ChromaSettings
-from chromadb.utils import embedding_functions
 import uuid
 
 from src.utils.logger import get_logger
@@ -58,6 +55,10 @@ class VectorStore:
         logger.info(f"Initializing ChromaDB at: {self.persist_directory}")
         
         try:
+            # Lazy imports to avoid loading heavy deps at app startup
+            import chromadb
+            from chromadb.config import Settings as ChromaSettings
+            
             # Initialize ChromaDB client
             self.client = chromadb.PersistentClient(
                 path=self.persist_directory,

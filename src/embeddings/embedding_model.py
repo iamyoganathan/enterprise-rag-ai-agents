@@ -6,7 +6,6 @@ Supports multiple embedding models, batch processing, and caching.
 
 from typing import List, Optional, Dict, Any, Union
 import numpy as np
-from sentence_transformers import SentenceTransformer
 import hashlib
 import json
 from pathlib import Path
@@ -88,6 +87,9 @@ class EmbeddingModel:
         logger.info(f"Loading embedding model: {self.model_name}")
         
         try:
+            # Lazy import to avoid loading torch at startup
+            from sentence_transformers import SentenceTransformer
+            
             # Load the model
             self.model = SentenceTransformer(self.model_name, device=device)
             

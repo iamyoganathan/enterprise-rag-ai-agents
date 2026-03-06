@@ -7,7 +7,6 @@ from fastapi import APIRouter, HTTPException
 from pydantic import BaseModel, Field
 from typing import List, Optional, Dict, Any
 
-from src.retrieval import get_retriever, get_query_processor
 from src.utils.logger import get_logger
 
 logger = get_logger(__name__)
@@ -59,6 +58,8 @@ async def search(request: SearchRequest):
     start_time = time.time()
     
     try:
+        from src.retrieval import get_retriever, get_query_processor
+        
         # Process query
         query_processor = get_query_processor()
         processed = query_processor.process(request.query)
@@ -134,6 +135,8 @@ async def find_similar_documents(request: SimilarDocRequest):
         query_text = doc_results["documents"][0]
         
         # Search for similar
+        from src.retrieval import get_retriever
+        
         retriever = get_retriever(
             collection_name="documents",
             retrieval_strategy="semantic",
@@ -178,6 +181,8 @@ async def analyze_query(query: str):
     Analyze a query to extract intent, keywords, and generate expansions.
     """
     try:
+        from src.retrieval import get_query_processor
+        
         query_processor = get_query_processor()
         result = query_processor.process(query)
         

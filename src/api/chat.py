@@ -11,8 +11,6 @@ import json
 import asyncio
 import time
 
-from src.llm import RAGChain, get_conversation_manager
-from src.agents.agent_rag_chain import get_agent_rag_chain
 from src.utils.logger import get_logger
 
 logger = get_logger(__name__)
@@ -89,6 +87,9 @@ async def chat(request: ChatRequest):
             f"Top K: {request.top_k} | "
             f"Agents: {request.use_agents}"
         )
+        
+        from src.llm import RAGChain, get_conversation_manager
+        from src.agents.agent_rag_chain import get_agent_rag_chain
         
         # Choose RAG implementation
         if request.use_agents:
@@ -182,6 +183,8 @@ async def _stream_generator(request: ChatRequest):
     """
     try:
         # Initialize RAG chain
+        from src.llm import RAGChain
+        
         rag = RAGChain(
             collection_name="documents",
             retrieval_strategy="semantic",
@@ -243,6 +246,8 @@ async def get_conversation_history(conversation_id: str):
     Get conversation history.
     """
     try:
+        from src.llm import get_conversation_manager
+        
         conv_manager = get_conversation_manager()
         conversation = conv_manager.get_conversation(conversation_id)
         
@@ -278,6 +283,8 @@ async def list_conversations():
     List all conversations.
     """
     try:
+        from src.llm import get_conversation_manager
+        
         conv_manager = get_conversation_manager()
         conversations = conv_manager.list_conversations()
         
@@ -304,6 +311,8 @@ async def delete_conversation(conversation_id: str):
     Delete a conversation.
     """
     try:
+        from src.llm import get_conversation_manager
+        
         conv_manager = get_conversation_manager()
         conv_manager.delete_conversation(conversation_id)
         
@@ -326,6 +335,8 @@ async def quick_ask(
     Quick Q&A endpoint - simplified interface for single questions.
     """
     try:
+        from src.llm import RAGChain
+        
         rag = RAGChain(
             collection_name="documents",
             retrieval_strategy="semantic",
