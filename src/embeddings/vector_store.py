@@ -58,7 +58,15 @@ class VectorStore:
             # Lazy imports to avoid loading heavy deps at app startup
             import chromadb
             
-            # Initialize ChromaDB client (no custom Settings - compatible with all versions)
+            # Clean up env vars that cause "unable to infer type" in newer chromadb
+            import os
+            for key in list(os.environ.keys()):
+                if key.startswith("CHROMA_") and key not in (
+                    "CHROMA_SERVER_HOST", "CHROMA_SERVER_HTTP_PORT"
+                ):
+                    os.environ.pop(key, None)
+            
+            # Initialize ChromaDB client
             self.client = chromadb.PersistentClient(
                 path=self.persist_directory
             )
