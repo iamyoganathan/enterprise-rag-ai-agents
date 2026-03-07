@@ -151,10 +151,12 @@ async def root():
 @app.get("/health", tags=["Health"])
 async def health_check():
     """Lightweight health check endpoint."""
+    import sys
     return {
         "status": "healthy",
         "timestamp": time.time(),
-        "version": "1.0.0"
+        "version": "1.0.0",
+        "python": sys.version
     }
 
 
@@ -162,6 +164,19 @@ async def health_check():
 @app.get("/health/deep", tags=["Health"])
 async def deep_health_check():
     """Deep health check that verifies all components (requires more memory)."""
+    try:
+        import sys
+        import chromadb
+        chromadb_version = chromadb.__version__
+    except Exception as cv_err:
+        chromadb_version = f"import error: {cv_err}"
+    
+    try:
+        import pydantic
+        pydantic_version = pydantic.__version__
+    except Exception:
+        pydantic_version = "unknown"
+    
     try:
         from src.embeddings import get_vector_store
         from src.llm import get_llm_client
@@ -181,7 +196,10 @@ async def deep_health_check():
                 "llm_client": "operational",
                 "document_count": doc_count
             },
-            "version": "1.0.0"
+            "version": "1.0.0",
+            "python": sys.version,
+            "chromadb": chromadb_version,
+            "pydantic": pydantic_version
         }
     
     except Exception as e:
@@ -190,7 +208,10 @@ async def deep_health_check():
             status_code=503,
             content={
                 "status": "unhealthy",
-                "error": str(e)
+                "error": str(e),
+                "python": sys.version,
+                "chromadb": chromadb_version,
+                "pydantic": pydantic_version
             }
         )
 
