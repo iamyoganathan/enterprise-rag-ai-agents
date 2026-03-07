@@ -13,7 +13,7 @@ onnxruntime>=1.17.0
 tokenizers>=0.15.0
 
 # Vector Databases
-chromadb>=0.5.0
+chromadb>=0.4.24
 # faiss-cpu removed - not used (only chromadb is used)
 
 # Document Processing
