@@ -272,7 +272,7 @@ class IndexingPipeline:
         stats = self.stats.copy()
         stats["vector_store_count"] = self.vector_store.count()
         stats["collection_name"] = self.collection_name
-        stats["embedding_model"] = self.embedding_model.model_name
+        stats["embedding_model"] = "chromadb-default-onnx"
         
         return stats
     

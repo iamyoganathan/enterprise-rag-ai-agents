@@ -78,7 +78,7 @@ async def search(request: SearchRequest):
         )
         
         results = retriever.retrieve(
-            query=processed["cleaned_query"],
+            query=processed.cleaned,
             filter=request.filter
         )
         
@@ -86,8 +86,8 @@ async def search(request: SearchRequest):
         search_results = [
             SearchResult(
                 id=result["id"],
-                text=result["content"],
-                score=result["score"],
+                text=result["document"],
+                score=result["similarity"],
                 metadata=result["metadata"]
             )
             for result in results
@@ -152,8 +152,8 @@ async def find_similar_documents(request: SimilarDocRequest):
         search_results = [
             SearchResult(
                 id=result["id"],
-                text=result["content"],
-                score=result["score"],
+                text=result["document"],
+                score=result["similarity"],
                 metadata=result["metadata"]
             )
             for result in results
@@ -188,10 +188,10 @@ async def analyze_query(query: str):
         
         return {
             "original_query": query,
-            "cleaned_query": result["cleaned_query"],
-            "intent": result["intent"],
-            "keywords": result["keywords"],
-            "expanded_queries": result["expanded_queries"]
+            "cleaned_query": result.cleaned,
+            "intent": result.intent,
+            "keywords": result.keywords,
+            "expanded_queries": result.expanded
         }
     
     except Exception as e:

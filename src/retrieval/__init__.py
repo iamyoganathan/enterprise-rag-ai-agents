@@ -32,7 +32,11 @@ _context_builder_instance = None
 
 def get_retriever(collection_name="documents", retrieval_strategy="semantic", top_k=5):
     """Get or create a Retriever instance."""
-    return Retriever(collection_name=collection_name, retrieval_strategy=retrieval_strategy, top_k=top_k)
+    return Retriever(
+        collection_name=collection_name,
+        strategy=RetrievalStrategy(retrieval_strategy),
+        top_k=top_k
+    )
 
 def get_query_processor():
     """Get or create a QueryProcessor instance."""

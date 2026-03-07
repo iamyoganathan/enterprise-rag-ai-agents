@@ -3,12 +3,10 @@ Embeddings Module
 Provides text embedding generation and vector storage capabilities.
 """
 
-from src.embeddings.embedding_model import (
-    EmbeddingModel,
-    get_embedding_model,
-    embed_text,
-    embed_texts
-)
+# Note: EmbeddingModel, get_embedding_model, embed_text, embed_texts are no longer
+# used at runtime. ChromaDB handles embeddings via built-in ONNX model.
+# Kept as lazy imports for backward compatibility (tests, etc.)
+
 from src.embeddings.vector_store import (
     VectorStore,
     get_vector_store
@@ -20,10 +18,6 @@ from src.embeddings.indexing import (
 )
 
 __all__ = [
-    "EmbeddingModel",
-    "get_embedding_model",
-    "embed_text",
-    "embed_texts",
     "VectorStore",
     "get_vector_store",
     "IndexingPipeline",

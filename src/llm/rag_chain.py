@@ -77,7 +77,7 @@ class RAGChain:
             strategy=RetrievalStrategy(retrieval_strategy),
             top_k=top_k
         )
-        self.reranker = Reranker(strategy=rerank_strategy)
+        self.reranker = Reranker(strategy=rerank_strategy or "score")
         self.query_processor = QueryProcessor()
         self.context_builder = ContextBuilder(max_tokens=max_context_tokens)
         self.llm_client = get_llm_client()

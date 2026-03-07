@@ -111,6 +111,7 @@ async def chat(request: ChatRequest):
                 retrieval_strategy="semantic",
                 rerank_strategy="mmr" if request.use_reranking else None,
                 top_k=request.top_k,
+                temperature=request.temperature,
                 use_conversation=request.conversation_id is not None
             )
             
@@ -119,13 +120,11 @@ async def chat(request: ChatRequest):
                 response = rag.chat(
                     message=request.user_query,
                     conversation_id=request.conversation_id,
-                    create_conversation=True,
-                    temperature=request.temperature
+                    create_conversation=True
                 )
             else:
                 response = rag.query(
-                    query=request.user_query,
-                    temperature=request.temperature
+                    query=request.user_query
                 )
         
         # Format sources
@@ -190,6 +189,7 @@ async def _stream_generator(request: ChatRequest):
             retrieval_strategy="semantic",
             rerank_strategy="mmr" if request.use_reranking else None,
             top_k=request.top_k,
+            temperature=request.temperature,
             use_conversation=request.conversation_id is not None
         )
         
@@ -204,7 +204,6 @@ async def _stream_generator(request: ChatRequest):
         else:
             response_gen = rag.query(
                 query=request.user_query,
-                temperature=request.temperature,
                 stream=True
             )
         
