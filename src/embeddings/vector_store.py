@@ -77,7 +77,22 @@ class VectorStore:
             
         except Exception as e:
             logger.error(f"Failed to initialize vector store: {str(e)}")
-            raise
+            # If DB is corrupt/incompatible, clear and retry once
+            if "unable to infer type" in str(e) or "chroma_server" in str(e):
+                logger.warning("Corrupt ChromaDB data detected — resetting storage")
+                import shutil
+                shutil.rmtree(self.persist_directory, ignore_errors=True)
+                Path(self.persist_directory).mkdir(parents=True, exist_ok=True)
+                import chromadb
+                self.client = chromadb.PersistentClient(path=self.persist_directory)
+                self.collection = self.client.get_or_create_collection(
+                    name=collection_name,
+                    embedding_function=embedding_function,
+                    metadata={"description": "RAG document collection"}
+                )
+                logger.info("Vector store re-initialized after reset")
+            else:
+                raise
     
     def add_documents(
         self,
