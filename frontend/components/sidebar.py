@@ -50,6 +50,17 @@ def render_sidebar():
             if st.button("🚀 Process Document", use_container_width=True):
                 with st.spinner(f"Processing {uploaded_file.name}..."):
                     try:
+                        # Wake up backend if on free tier (cold start takes ~30s)
+                        health = api_client.health_check()
+                        if health.get("status") != "healthy":
+                            st.info("⏳ Waking up backend server (free tier)...")
+                            import time
+                            for _ in range(12):  # Retry up to 60s
+                                time.sleep(5)
+                                health = api_client.health_check()
+                                if health.get("status") == "healthy":
+                                    break
+                        
                         # Upload to backend
                         result = api_client.upload_file_object(
                             uploaded_file,
@@ -57,7 +68,7 @@ def render_sidebar():
                         )
                         
                         st.success(f"✅ Uploaded: {result['filename']}")
-                        st.info(f"📊 Chunks: {result['chunks']}")
+                        st.info(f"📊 Status: {result.get('status', 'processing')}")
                         st.info(f"🆔 ID: {result['id']}")
                         
                         # Add to session state

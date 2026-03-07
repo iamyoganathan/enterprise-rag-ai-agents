@@ -44,6 +44,7 @@ class DeleteResponse(BaseModel):
 async def process_document_task(file_path: Path, doc_id: str):
     """Background task to process document."""
     try:
+        import gc
         from src.ingestion import IngestionPipeline
         from src.embeddings import IndexingPipeline
         
@@ -56,25 +57,41 @@ async def process_document_task(file_path: Path, doc_id: str):
         )
         result = ingestion.process_file(file_path)
         
-        # Index chunks
+        # Free ingestion pipeline memory before indexing
+        del ingestion
+        gc.collect()
+        
+        # Index chunks in batches to limit memory usage
         indexing = IndexingPipeline(collection_name="documents")
-        index_result = indexing.index_document(
-            result["chunks"],
-            {
-                "document_id": doc_id,
-                "file_name": file_path.name,
-                "file_path": str(file_path),
-                "category": result["metadata"].get("category", "unknown")
-            }
-        )
+        chunks = result["chunks"]
+        batch_size = 50  # Process 50 chunks at a time to avoid OOM
+        total_indexed = 0
+        
+        for i in range(0, len(chunks), batch_size):
+            batch = chunks[i:i + batch_size]
+            index_result = indexing.index_document(
+                batch,
+                {
+                    "document_id": doc_id,
+                    "file_name": file_path.name,
+                    "file_path": str(file_path),
+                    "category": result["metadata"].get("category", "unknown")
+                }
+            )
+            total_indexed += index_result["chunks_indexed"]
+            gc.collect()
+        
+        # Cleanup
+        del indexing, result, chunks
+        gc.collect()
         
         logger.info(
             f"Document processed: {file_path.name}, "
-            f"{index_result['chunks_indexed']} chunks indexed"
+            f"{total_indexed} chunks indexed"
         )
         
     except Exception as e:
-        logger.error(f"Failed to process document: {str(e)}")
+        logger.error(f"Failed to process document {file_path.name}: {str(e)}", exc_info=True)
 
 
 @router.post("/upload", response_model=DocumentResponse)
