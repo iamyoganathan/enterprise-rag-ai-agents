@@ -31,12 +31,15 @@ _reranker_instance = None
 _context_builder_instance = None
 
 def get_retriever(collection_name="documents", retrieval_strategy="semantic", top_k=5):
-    """Get or create a Retriever instance."""
-    return Retriever(
-        collection_name=collection_name,
-        strategy=RetrievalStrategy(retrieval_strategy),
-        top_k=top_k
-    )
+    """Get or create a Retriever instance (singleton per collection)."""
+    global _retriever_instance
+    if _retriever_instance is None:
+        _retriever_instance = Retriever(
+            collection_name=collection_name,
+            strategy=RetrievalStrategy(retrieval_strategy),
+            top_k=top_k
+        )
+    return _retriever_instance
 
 def get_query_processor():
     """Get or create a QueryProcessor instance."""
@@ -46,8 +49,11 @@ def get_query_processor():
     return _query_processor_instance
 
 def get_reranker(strategy="mmr"):
-    """Get or create a Reranker instance."""
-    return Reranker(strategy=strategy)
+    """Get or create a Reranker instance (singleton)."""
+    global _reranker_instance
+    if _reranker_instance is None:
+        _reranker_instance = Reranker(strategy=strategy)
+    return _reranker_instance
 
 def get_context_builder():
     """Get or create a ContextBuilder instance."""

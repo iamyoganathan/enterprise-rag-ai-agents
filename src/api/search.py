@@ -55,6 +55,7 @@ async def search(request: SearchRequest):
     - multi_query: Generates multiple query variations
     """
     import time
+    import gc
     start_time = time.time()
     
     try:
@@ -107,6 +108,8 @@ async def search(request: SearchRequest):
     except Exception as e:
         logger.error(f"Search failed: {str(e)}")
         raise HTTPException(status_code=500, detail=str(e))
+    finally:
+        gc.collect()
 
 
 @router.post("/similar", response_model=SearchResponse)

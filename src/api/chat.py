@@ -10,6 +10,7 @@ from typing import List, Optional, Dict, Any
 import json
 import asyncio
 import time
+import gc
 
 from src.utils.logger import get_logger
 
@@ -163,6 +164,8 @@ async def chat(request: ChatRequest):
     except Exception as e:
         logger.error(f"Chat failed: {str(e)}")
         raise HTTPException(status_code=500, detail=str(e))
+    finally:
+        gc.collect()
 
 
 @router.post("/stream")

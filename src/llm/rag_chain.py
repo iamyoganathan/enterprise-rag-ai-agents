@@ -8,8 +8,8 @@ from typing import List, Dict, Any, Optional, Iterator
 from dataclasses import dataclass
 import time
 
-from src.retrieval import Retriever, RetrievalStrategy, Reranker, ContextBuilder
-from src.retrieval.query_processor import QueryProcessor
+from src.retrieval import RetrievalStrategy, Reranker, ContextBuilder
+from src.retrieval import get_retriever, get_reranker, get_query_processor, get_context_builder
 from src.llm.llm_client import LLMClient, get_llm_client
 from src.llm.prompt_templates import get_template_manager
 from src.llm.conversation import ConversationManager, get_conversation_manager
@@ -71,15 +71,15 @@ class RAGChain:
             system_prompt: Optional system prompt
             use_conversation: Whether to use conversation history
         """
-        # Initialize components
-        self.retriever = Retriever(
+        # Initialize components (reuse singletons to save memory)
+        self.retriever = get_retriever(
             collection_name=collection_name,
-            strategy=RetrievalStrategy(retrieval_strategy),
+            retrieval_strategy=retrieval_strategy,
             top_k=top_k
         )
-        self.reranker = Reranker(strategy=rerank_strategy or "score")
-        self.query_processor = QueryProcessor()
-        self.context_builder = ContextBuilder(max_tokens=max_context_tokens)
+        self.reranker = get_reranker(strategy=rerank_strategy or "score")
+        self.query_processor = get_query_processor()
+        self.context_builder = get_context_builder()
         self.llm_client = get_llm_client()
         self.template_manager = get_template_manager()
         

@@ -6,7 +6,6 @@ Supports semantic search, hybrid search, and multi-query retrieval.
 
 from typing import List, Dict, Any, Optional, Union
 from enum import Enum
-import numpy as np
 from collections import defaultdict
 
 from src.embeddings.vector_store import get_vector_store
@@ -134,7 +133,8 @@ class Retriever:
             self.stats["total_queries"] += 1
             self.stats["total_results"] += len(results)
             if results:
-                avg_sim = np.mean([r["similarity"] for r in results])
+                sims = [r["similarity"] for r in results]
+                avg_sim = sum(sims) / len(sims)
                 self.stats["avg_similarity"] = (
                     (self.stats["avg_similarity"] * (self.stats["total_queries"] - 1) + avg_sim)
                     / self.stats["total_queries"]

@@ -5,7 +5,6 @@ Handles document storage, retrieval, and similarity search.
 """
 
 from typing import List, Dict, Any, Optional, Tuple
-import numpy as np
 from pathlib import Path
 import uuid
 
