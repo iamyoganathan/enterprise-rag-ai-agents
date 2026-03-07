@@ -44,7 +44,7 @@ class SimilarDocRequest(BaseModel):
     top_k: int = Field(default=5, ge=1, le=50)
 
 
-@router.post("/", response_model=SearchResponse)
+@router.post("", response_model=SearchResponse)
 async def search(request: SearchRequest):
     """
     Perform semantic search.

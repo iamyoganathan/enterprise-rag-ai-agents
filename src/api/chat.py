@@ -69,7 +69,7 @@ class ConversationHistory(BaseModel):
     updated_at: float
 
 
-@router.post("/", response_model=ChatResponse)
+@router.post("", response_model=ChatResponse)
 async def chat(request: ChatRequest):
     """
     Ask a question and get an AI-generated answer with sources.
@@ -240,7 +240,7 @@ async def _stream_generator(request: ChatRequest):
         yield f"data: {json.dumps({'type': 'error', 'error': str(e)})}\n\n"
 
 
-@router.get("/conversations/{conversation_id}", response_model=ConversationHistory)
+@router.get("/history/{conversation_id}", response_model=ConversationHistory)
 async def get_conversation_history(conversation_id: str):
     """
     Get conversation history.
