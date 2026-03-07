@@ -217,16 +217,12 @@ class VectorStore:
         Returns:
             List of results with document, metadata, and distance
         """
-        # Generate embedding for query text
-        from .embedding_model import get_embedding_model
-        embedding_model = get_embedding_model()
-        query_embedding = embedding_model.encode(query_text).tolist()
-        
-        logger.info(f"[DEBUG] Similarity search: query='{query_text[:50]}...', k={k}, embedding_dim={len(query_embedding)}")
+        # Use ChromaDB's built-in embedding function for the query
+        logger.info(f"[DEBUG] Similarity search: query='{query_text[:50]}...', k={k}")
         logger.info(f"[DEBUG] Collection has {self.collection.count()} documents")
         
         results = self.query(
-            query_embeddings=[query_embedding],
+            query_texts=[query_text],
             n_results=k,
             where=filter
         )

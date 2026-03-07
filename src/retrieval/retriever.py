@@ -9,7 +9,6 @@ from enum import Enum
 import numpy as np
 from collections import defaultdict
 
-from src.embeddings.embedding_model import get_embedding_model
 from src.embeddings.vector_store import get_vector_store
 from src.utils.logger import get_logger
 from src.utils.config import get_settings
@@ -63,8 +62,7 @@ class Retriever:
         self.top_k = top_k
         self.similarity_threshold = similarity_threshold
         
-        # Initialize components
-        self.embedding_model = get_embedding_model(embedding_model_name)
+        # Initialize components (ChromaDB handles embeddings via built-in ONNX)
         self.vector_store = get_vector_store(collection_name)
         
         # Statistics

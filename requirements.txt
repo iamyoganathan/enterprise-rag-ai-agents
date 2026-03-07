@@ -6,13 +6,15 @@ langchain-openai>=0.1.0
 langchain-groq>=0.1.0
 openai>=1.12.0
 groq>=0.4.2
-transformers>=4.38.0
-sentence-transformers>=2.5.1
-torch>=2.2.0
+# transformers removed - not directly imported anywhere
+# sentence-transformers and torch removed - too heavy for 512MB deploy
+# Using ChromaDB's built-in ONNX embeddings instead
+onnxruntime>=1.17.0
+tokenizers>=0.15.0
 
 # Vector Databases
 chromadb>=0.4.24
-faiss-cpu>=1.12.0
+# faiss-cpu removed - not used (only chromadb is used)
 
 # Document Processing
 pypdf2>=3.0.1
@@ -57,10 +59,7 @@ redis>=5.0.1
 langsmith>=0.1.0
 loguru>=0.7.2
 
-# Evaluation & Testing
-ragas>=0.1.7
-datasets>=2.16.1
-evaluate>=0.4.1
+# Evaluation & Testing (ragas/datasets/evaluate removed - optional, install separately for evaluation)
 pytest>=8.0.0
 pytest-asyncio>=0.23.5
 pytest-cov>=4.1.0

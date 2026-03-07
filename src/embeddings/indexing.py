@@ -9,7 +9,6 @@ from pathlib import Path
 from dataclasses import asdict
 
 from src.ingestion.chunker import Chunk
-from src.embeddings.embedding_model import get_embedding_model
 from src.embeddings.vector_store import get_vector_store
 from src.utils.logger import get_logger
 from src.utils.monitoring import get_performance_monitor
@@ -46,8 +45,7 @@ class IndexingPipeline:
         self.collection_name = collection_name
         self.batch_size = batch_size
         
-        # Initialize components
-        self.embedding_model = get_embedding_model(embedding_model_name)
+        # Initialize components (ChromaDB handles embeddings via built-in ONNX)
         self.vector_store = get_vector_store(collection_name)
         
         # Statistics
@@ -60,8 +58,7 @@ class IndexingPipeline:
         
         logger.info(
             f"Indexing pipeline initialized: "
-            f"collection={collection_name}, "
-            f"model={self.embedding_model.model_name}"
+            f"collection={collection_name} (using ChromaDB built-in embeddings)"
         )
     
     def index_chunks(
@@ -89,16 +86,8 @@ class IndexingPipeline:
         
         perf_monitor.start_timer("indexing_pipeline")
         try:
-            # Extract texts for embedding
+            # Extract texts (ChromaDB will generate embeddings via built-in ONNX)
             texts = [chunk.text for chunk in chunks]
-            
-            # Generate embeddings
-            logger.debug(f"Generating embeddings for {len(texts)} chunks...")
-            embeddings = self.embedding_model.encode_batch(
-                texts,
-                batch_size=self.batch_size,
-                show_progress=show_progress
-            )
             self.stats["embeddings_generated"] += len(texts)
             
             # Prepare metadata
@@ -134,8 +123,7 @@ class IndexingPipeline:
             self.vector_store.add_documents(
                 documents=texts,
                 metadatas=metadatas,
-                ids=ids,
-                embeddings=embeddings.tolist()
+                ids=ids
             )
             
             # Update statistics
