@@ -57,15 +57,10 @@ class VectorStore:
         try:
             # Lazy imports to avoid loading heavy deps at app startup
             import chromadb
-            from chromadb.config import Settings as ChromaSettings
             
-            # Initialize ChromaDB client
+            # Initialize ChromaDB client (no custom Settings - compatible with all versions)
             self.client = chromadb.PersistentClient(
-                path=self.persist_directory,
-                settings=ChromaSettings(
-                    anonymized_telemetry=False,
-                    allow_reset=True
-                )
+                path=self.persist_directory
             )
             
             # Get or create collection
@@ -274,7 +269,7 @@ class VectorStore:
                 where=where,
                 limit=limit,
                 offset=offset,
-                include=["documents", "metadatas", "embeddings"]
+                include=["documents", "metadatas"]
             )
             
             logger.debug(f"Retrieved {len(results['ids'])} documents")
