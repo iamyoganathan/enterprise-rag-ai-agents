@@ -101,6 +101,7 @@ class Retriever:
         logger.debug(f"Retrieving with strategy={strategy.value}, query='{query[:50]}...'")
         
         perf_monitor.start_timer("retrieval")
+        results = []
         try:
             if strategy == RetrievalStrategy.SEMANTIC:
                 results = self._semantic_search(query, top_k, filter)
