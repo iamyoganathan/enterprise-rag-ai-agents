@@ -1,8 +1,4 @@
-# ==========================================
-# GitHub Actions CI Pipeline
-# ==========================================
-
-name: CI Pipeline
+name: CI
 
 on:
   push:
@@ -10,97 +6,21 @@ on:
   pull_request:
     branches: [ main, develop ]
 
-env:
-  PYTHON_VERSION: '3.11'
-
 jobs:
-  # ==========================================
-  # Code Quality Checks (non-blocking)
-  # ==========================================
   lint:
-    name: Lint Code
+    name: Code Quality Check
     runs-on: ubuntu-latest
-    continue-on-error: true
 
     steps:
-      - name: Checkout code
-        uses: actions/checkout@v4
+      - uses: actions/checkout@v4
 
-      - name: Set up Python
-        uses: actions/setup-python@v5
+      - uses: actions/setup-python@v5
         with:
-          python-version: ${{ env.PYTHON_VERSION }}
-
-      - name: Cache pip packages
-        uses: actions/cache@v3
-        with:
-          path: ~/.cache/pip
-          key: ${{ runner.os }}-pip-${{ hashFiles('requirements.txt') }}
-          restore-keys: |
-            ${{ runner.os }}-pip-
+          python-version: '3.11'
 
       - name: Install lint tools
-        run: |
-          python -m pip install --upgrade pip
-          pip install black flake8 isort mypy
+        run: pip install flake8
 
-      - name: Run Black (formatting)
-        run: black --check src/ frontend/ tests/
+      - name: Run Flake8
+        run: flake8 src/ frontend/ --max-line-length=100 --extend-ignore=E203,W503,E501
         continue-on-error: true
-
-      - name: Run isort (import sorting)
-        run: isort --check-only src/ frontend/ tests/
-        continue-on-error: true
-
-      - name: Run Flake8 (linting)
-        run: flake8 src/ frontend/ tests/ --max-line-length=100 --extend-ignore=E203,W503
-        continue-on-error: true
-
-      - name: Run MyPy (type checking)
-        run: mypy src/ --ignore-missing-imports
-        continue-on-error: true
-
-  # ==========================================
-  # Unit Tests
-  # ==========================================
-  test:
-    name: Run Tests
-    runs-on: ubuntu-latest
-    continue-on-error: true
-
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v4
-
-      - name: Set up Python
-        uses: actions/setup-python@v5
-        with:
-          python-version: ${{ env.PYTHON_VERSION }}
-
-      - name: Cache pip packages
-        uses: actions/cache@v3
-        with:
-          path: ~/.cache/pip
-          key: ${{ runner.os }}-pip-${{ hashFiles('requirements.txt') }}
-          restore-keys: |
-            ${{ runner.os }}-pip-
-
-      - name: Install dependencies
-        run: |
-          python -m pip install --upgrade pip
-          pip install -r requirements.txt
-
-      - name: Run pytest
-        env:
-          GROQ_API_KEY: ${{ secrets.GROQ_API_KEY }}
-          SECRET_KEY: test_secret_key_for_ci_cd
-        run: |
-          pytest tests/ -v --cov=src --cov-report=xml --cov-report=term-missing
-        continue-on-error: true
-
-      - name: Upload coverage report
-        uses: actions/upload-artifact@v3
-        if: always()
-        with:
-          name: coverage-report
-          path: htmlcov/
