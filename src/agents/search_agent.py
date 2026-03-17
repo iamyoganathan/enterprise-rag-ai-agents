@@ -80,9 +80,10 @@ class SearchAgent(BaseAgent):
             variations.append(processed.cleaned)
         
         # Add expanded terms
-        if processed.expanded_terms:
-            expanded = f"{query} {' '.join(processed.expanded_terms)}"
-            variations.append(expanded)
+        if processed.expanded:
+            for exp in processed.expanded:
+                if exp != query and exp not in variations:
+                    variations.append(exp)
         
         return variations
     

@@ -22,8 +22,8 @@ def render_sidebar():
             if health.get("status") == "healthy":
                 st.success("✅ Backend is healthy")
                 
-                # Show document count
-                doc_count = health.get("components", {}).get("document_count", 0)
+                # Show document count from session state or health endpoint
+                doc_count = len(st.session_state.get("uploaded_docs", [])) or health.get("components", {}).get("document_count", 0)
                 st.metric("📚 Documents Indexed", doc_count)
             else:
                 st.error(f"❌ Backend unhealthy: {health.get('error', 'Unknown error')}")
@@ -43,7 +43,8 @@ def render_sidebar():
         uploaded_file = st.file_uploader(
             "Choose a file",
             type=["pdf", "docx", "txt", "md"],
-            help="Upload PDF, DOCX, TXT, or Markdown files"
+            help="Upload PDF, DOCX, TXT, or Markdown files",
+            key=f"doc_uploader_{st.session_state.get('upload_counter', 0)}"
         )
         
         if uploaded_file is not None:
@@ -71,10 +72,15 @@ def render_sidebar():
                         st.info(f"📊 Status: {result.get('status', 'processing')}")
                         st.info(f"🆔 ID: {result['id']}")
                         
-                        # Add to session state
-                        st.session_state.uploaded_docs.append(result)
+                        # Refresh document list from backend
+                        try:
+                            docs = api_client.list_documents()
+                            st.session_state.uploaded_docs = docs.get("documents", [])
+                        except Exception:
+                            st.session_state.uploaded_docs.append(result)
                         
-                        # Clear file uploader
+                        # Increment counter to reset file uploader widget
+                        st.session_state.upload_counter = st.session_state.get('upload_counter', 0) + 1
                         st.rerun()
                         
                     except Exception as e:

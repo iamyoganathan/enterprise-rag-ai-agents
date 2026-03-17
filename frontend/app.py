@@ -37,11 +37,12 @@ st.set_page_config(
         A production-ready Retrieval-Augmented Generation (RAG) system built with:
         - **FastAPI** for backend services
         - **LangChain** for LLM orchestration
+        - **LangGraph** for multi-agent workflows
         - **ChromaDB** for vector storage
         - **Groq** for fast inference
         - **Streamlit** for the frontend
         
-        Version 1.0.0
+        Version 2.0.0
         """
     }
 )

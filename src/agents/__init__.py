@@ -1,11 +1,11 @@
 """
 Agent System Module
-Multi-agent orchestration for complex query handling.
+LangGraph-powered multi-agent orchestration for complex query handling.
 
 This module provides:
 - Base agent abstractions
 - Specialized agents (Search, Analysis, Synthesis)
-- Agent orchestration and coordination
+- LangGraph StateGraph orchestration
 - Agent-enhanced RAG pipeline
 """
 
@@ -21,6 +21,7 @@ from src.agents.base import (
 
 from src.agents.orchestrator import (
     AgentOrchestrator,
+    AgentState,
     QueryIntent,
     get_orchestrator
 )

@@ -25,7 +25,7 @@ class Settings(BaseSettings):
     groq_api_key: Optional[str] = Field(default=None, description="Groq API key")
     huggingface_api_key: Optional[str] = Field(default=None, description="HuggingFace API token")
     
-    # LangSmith Monitoring
+    # LangSmith Monitoring (via LangChain)
     langchain_tracing_v2: bool = Field(default=False, description="Enable LangSmith tracing")
     langchain_api_key: Optional[str] = Field(default=None, description="LangSmith API key")
     langchain_project: str = Field(default="enterprise-rag-system", description="LangSmith project name")

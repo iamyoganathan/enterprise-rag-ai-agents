@@ -1,5 +1,9 @@
-# Core LLM
-# langchain/langgraph removed - not imported anywhere in src/
+# Core LLM & LangChain
+langchain-core>=0.3.0
+langchain-groq>=0.2.0
+langchain-community>=0.3.0
+langchain>=0.3.0
+langgraph>=0.2.0
 openai>=1.12.0
 groq>=0.4.2
 # ChromaDB's built-in ONNX embeddings (no sentence-transformers/torch)

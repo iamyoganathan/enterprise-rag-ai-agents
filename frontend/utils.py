@@ -362,3 +362,6 @@ def initialize_session_state():
     
     if "force_agents" not in st.session_state:
         st.session_state.force_agents = False
+    
+    if "upload_counter" not in st.session_state:
+        st.session_state.upload_counter = 0
