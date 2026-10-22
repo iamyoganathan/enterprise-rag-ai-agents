@@ -1,4 +1,4 @@
-﻿"""
+"""
 LLM Client Module
 Handles interaction with LLM providers via LangChain.
 Supports streaming, multiple models, and error handling.
@@ -68,10 +68,9 @@ class LLMClient:
 
     MODELS = {
         LLMProvider.GROQ: [
-            "llama-3.3-70b-versatile",
-            "llama-3.1-70b-versatile",
-            "mixtral-8x7b-32768",
-            "gemma2-9b-it"
+            "openai/gpt-oss-120b",
+            "openai/gpt-oss-20b",
+            "qwen/qwen3.8-27b",
         ],
         LLMProvider.OPENAI: [
             "gpt-4-turbo-preview",
@@ -89,7 +88,7 @@ class LLMClient:
         api_key: Optional[str] = None
     ):
         self.provider = LLMProvider(provider or settings.default_llm_provider)
-        self.model = model or self._get_default_model()
+        self.model = model or settings.default_llm_model
         self.temperature = temperature
         self.max_tokens = max_tokens
 
