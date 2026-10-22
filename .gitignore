@@ -96,3 +96,19 @@ Thumbs.db
 *.bak
 *.swp
 *.swo
+
+# Project documents (don't deploy)
+*.pptx
+*.docx
+project_analysis.md
+viva_preparation_guide.md
+generate_doc.py
+generate_ppt.py
+insert_diagrams.py
+data/uploads/
+Presentation_Slide_Explanations.md
+screencapture-*.png
+dfd_level_*.png
+use_case_diagram.png
+medguide_ai.docx
+~$*

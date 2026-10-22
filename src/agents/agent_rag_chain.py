@@ -1,4 +1,4 @@
-﻿"""
+"""
 Agent-Enhanced RAG Chain Module
 Integrates LangGraph agent system with traditional RAG pipeline.
 """
@@ -105,7 +105,7 @@ class AgentRAGChain:
                 logger.info("Using basic RAG")
                 response = self.basic_rag.query(query, conversation_id, stream=False, **kwargs)
 
-            perf_monitor.end_timer("agent_rag_query")
+            perf_monitor.stop_timer("agent_rag_query")
 
             return response
 

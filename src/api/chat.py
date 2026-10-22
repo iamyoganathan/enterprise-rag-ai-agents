@@ -59,15 +59,15 @@ class ConversationMessage(BaseModel):
     """Conversation message."""
     role: str
     content: str
-    timestamp: float
+    timestamp: str
 
 
 class ConversationHistory(BaseModel):
     """Conversation history response."""
     conversation_id: str
     messages: List[ConversationMessage]
-    created_at: float
-    updated_at: float
+    created_at: str
+    updated_at: str
 
 
 @router.post("", response_model=ChatResponse)
@@ -128,15 +128,22 @@ async def chat(request: ChatRequest):
                     query=request.user_query
                 )
         
-        # Format sources
-        sources = [
-            Source(
-                document=src["document"],
-                score=src["score"],
-                metadata=src["metadata"]
-            )
-            for src in response.sources
-        ]
+        # Format sources - handle both basic RAG and agent formats
+        sources = []
+        for src in response.sources:
+            if isinstance(src, dict):
+                sources.append(Source(
+                    document=src.get("document", src.get("content", "")),
+                    score=src.get("score", src.get("similarity", 0.0)),
+                    metadata=src.get("metadata", {})
+                ))
+            else:
+                # Handle object-style sources
+                sources.append(Source(
+                    document=getattr(src, "document", getattr(src, "content", "")),
+                    score=getattr(src, "score", getattr(src, "similarity", 0.0)),
+                    metadata=getattr(src, "metadata", {})
+                ))
         
         # Get total tokens
         if isinstance(response.tokens_used, dict):
@@ -260,7 +267,7 @@ async def get_conversation_history(conversation_id: str):
             ConversationMessage(
                 role=msg.role,
                 content=msg.content,
-                timestamp=msg.timestamp
+                timestamp=msg.timestamp.isoformat() if hasattr(msg.timestamp, 'isoformat') else str(msg.timestamp)
             )
             for msg in conversation.messages
         ]
@@ -268,8 +275,8 @@ async def get_conversation_history(conversation_id: str):
         return ConversationHistory(
             conversation_id=conversation.id,
             messages=messages,
-            created_at=conversation.created_at,
-            updated_at=conversation.updated_at
+            created_at=conversation.created_at.isoformat() if hasattr(conversation.created_at, 'isoformat') else str(conversation.created_at),
+            updated_at=conversation.updated_at.isoformat() if hasattr(conversation.updated_at, 'isoformat') else str(conversation.updated_at)
         )
     
     except HTTPException:
@@ -288,18 +295,14 @@ async def list_conversations():
         from src.llm import get_conversation_manager
         
         conv_manager = get_conversation_manager()
-        conversations = conv_manager.list_conversations()
+        conversation_ids = conv_manager.list_conversations()
         
         return {
             "conversations": [
-                {
-                    "conversation_id": conv_id,
-                    "created_at": conv_info.get("created_at", 0),
-                    "message_count": conv_info.get("message_count", 0)
-                }
-                for conv_id, conv_info in conversations.items()
+                conv_manager.get_conversation_summary(conv_id)
+                for conv_id in conversation_ids
             ],
-            "total": len(conversations)
+            "total": len(conversation_ids)
         }
     
     except Exception as e:

@@ -75,7 +75,8 @@ class SynthesisAgent(BaseAgent):
             Synthesis prompt
         """
         # Build context from sources
-        context = self.context_builder.build_context(sources)
+        context_obj = self.context_builder.build_context(sources)
+        context = context_obj.text if hasattr(context_obj, 'text') else str(context_obj)
         
         prompt = f"""You are synthesizing information from multiple sources to answer a query.
 

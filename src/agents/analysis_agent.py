@@ -157,9 +157,23 @@ Provide 2-3 sentences of analytical insights that connect these points to answer
         
         # Combine content from sources
         combined_content = "\n\n".join([
-            source.get("content", "") 
+            source.get("document", source.get("content", "")) 
             for source in sources[:5]  # Analyze top 5 sources
         ])
+        
+        if not combined_content.strip():
+            return AgentResult(
+                agent_name=self.name,
+                agent_type=self.agent_type,
+                status=AgentStatus.COMPLETED,
+                output={
+                    "analysis": "No content available to analyze.",
+                    "key_points": [],
+                    "insights": "",
+                    "sources": sources
+                },
+                metadata={"source_count": len(sources)}
+            )
         
         # Extract key points
         key_points = self.extract_key_points(combined_content, query)

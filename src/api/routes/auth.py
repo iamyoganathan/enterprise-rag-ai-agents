@@ -3,7 +3,7 @@ Authentication Routes
 Login, token refresh, and user management endpoints.
 """
 
-from datetime import timedelta
+from datetime import timedelta, timezone
 from typing import Optional
 from fastapi import APIRouter, Depends, HTTPException, status
 from fastapi.security import OAuth2PasswordRequestForm
@@ -162,14 +162,14 @@ async def create_api_key(
     expires_at = None
     if key_data.expires_days:
         from datetime import datetime, timedelta
-        expires_at = (datetime.utcnow() + timedelta(days=key_data.expires_days)).isoformat() + 'Z'
+        expires_at = (datetime.now(timezone.utc) + timedelta(days=key_data.expires_days)).isoformat() + 'Z'
     
     # Create API key entry
     key_entry = {
         "key": api_key,
         "name": key_data.name,
         "scopes": key_data.scopes,
-        "created_at": datetime.utcnow().isoformat() + 'Z',
+        "created_at": datetime.now(timezone.utc).isoformat() + 'Z',
         "expires_at": expires_at,
         "disabled": False,
         "owner": current_user.username

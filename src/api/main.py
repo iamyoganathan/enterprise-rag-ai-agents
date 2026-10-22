@@ -135,7 +135,7 @@ async def root():
     """API root endpoint."""
     return {
         "message": "Enterprise RAG System API",
-        "version": "1.0.0",
+        "version": "2.0.0",
         "status": "operational",
         "endpoints": {
             "docs": "/docs",
@@ -155,7 +155,7 @@ async def health_check():
     return {
         "status": "healthy",
         "timestamp": time.time(),
-        "version": "1.0.0",
+        "version": "2.0.0",
         "python": sys.version
     }
 

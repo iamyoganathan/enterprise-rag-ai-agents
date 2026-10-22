@@ -3,7 +3,7 @@ Authentication Middleware
 JWT-based authentication and API key validation for secure API access.
 """
 
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta, timezone
 from typing import Optional, Dict, Any
 from fastapi import HTTPException, Security, Depends, status
 from fastapi.security import HTTPBearer, HTTPAuthorizationCredentials, APIKeyHeader
@@ -46,13 +46,13 @@ class UserInDB(User):
     hashed_password: str
 
 
-# In-memory user store (replace with database in production)
+# ⚠️ DEMO ONLY — In production, replace with a proper database (e.g., PostgreSQL + SQLAlchemy)
 fake_users_db = {
     "admin": {
         "username": "admin",
         "full_name": "Admin User",
         "email": "admin@example.com",
-        "hashed_password": "$2b$12$EixZaYVK1fsbw1ZfbX3OXePaWxn96p36WQoeG6Lruj3vjPGga31lW",  # "secret"
+        "hashed_password": "$2b$12$EixZaYVK1fsbw1ZfbX3OXePaWxn96p36WQoeG6Lruj3vjPGga31lW",  # "secret" — change in production!
         "disabled": False,
         "scopes": ["read", "write", "admin"]
     },
@@ -60,7 +60,7 @@ fake_users_db = {
         "username": "user",
         "full_name": "Regular User",
         "email": "user@example.com",
-        "hashed_password": "$2b$12$EixZaYVK1fsbw1ZfbX3OXePaWxn96p36WQoeG6Lruj3vjPGga31lW",  # "secret"
+        "hashed_password": "$2b$12$EixZaYVK1fsbw1ZfbX3OXePaWxn96p36WQoeG6Lruj3vjPGga31lW",  # "secret" — change in production!
         "disabled": False,
         "scopes": ["read"]
     }
@@ -112,9 +112,9 @@ def create_access_token(data: dict, expires_delta: Optional[timedelta] = None) -
     to_encode = data.copy()
     
     if expires_delta:
-        expire = datetime.utcnow() + expires_delta
+        expire = datetime.now(timezone.utc) + expires_delta
     else:
-        expire = datetime.utcnow() + timedelta(minutes=settings.access_token_expire_minutes)
+        expire = datetime.now(timezone.utc) + timedelta(minutes=settings.access_token_expire_minutes)
     
     to_encode.update({"exp": expire})
     encoded_jwt = jwt.encode(to_encode, settings.secret_key, algorithm=settings.algorithm)
@@ -144,7 +144,7 @@ def validate_api_key(api_key: str) -> Optional[Dict[str, Any]]:
         # Check expiration
         expires_at = key_data.get("expires_at")
         if expires_at:
-            if datetime.fromisoformat(expires_at.replace('Z', '+00:00')) < datetime.now():
+            if datetime.fromisoformat(expires_at.replace('Z', '+00:00')) < datetime.now(timezone.utc):
                 return None
         
         return key_data
