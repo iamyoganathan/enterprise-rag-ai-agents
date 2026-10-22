@@ -22,7 +22,7 @@ services:
       - key: DEFAULT_LLM_PROVIDER
         value: groq
       - key: DEFAULT_LLM_MODEL
-        value: llama-3.3-70b-versatile
+        value: openai/gpt-oss-120b
       - key: VECTOR_DB_PATH
         value: /opt/render/project/data/vector_db
       - key: LOG_LEVEL

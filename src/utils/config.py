@@ -32,7 +32,7 @@ class Settings(BaseSettings):
     
     # Model Configuration
     default_llm_provider: str = Field(default="groq", description="Default LLM provider")
-    default_llm_model: str = Field(default="llama-3.3-70b-versatile", description="Default LLM model")
+    default_llm_model: str = Field(default="openai/gpt-oss-120b", description="Default LLM model")
     embedding_model: str = Field(default="all-mpnet-base-v2", description="Embedding model name")
     max_tokens: int = Field(default=8192, description="Maximum tokens for LLM")
     temperature: float = Field(default=0.7, description="LLM temperature")
